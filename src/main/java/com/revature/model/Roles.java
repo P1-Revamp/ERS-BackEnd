@@ -22,17 +22,17 @@ public class Roles {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="user_role_id")
-	private int userRoleId;
+	private int roleId;
 	
 	@Column(name="user_role", nullable=false, unique=true)
-	private String userRole;
+	private String role;
 	
 //	@OneToMany
 //	private Users user;
 //	
-	public Roles(String userRole) {
+	public Roles(String role) {
 		super();
-		this.userRole = userRole;
+		this.role = role;
 //		this.user = user;
 	}
 

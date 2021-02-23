@@ -1,5 +1,6 @@
 package com.revature.model;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -32,10 +33,10 @@ public class Reimbursement {
 	private int amount;
 	
 	@Column(name="submitted", nullable=false)
-	private Date submitted;
+	private ZonedDateTime submitted;
 	
 	@Column(name="resolved")
-	private Date resolved;
+	private ZonedDateTime resolved;
 	
 	@Column(name="description")
 	private String description;
@@ -56,7 +57,7 @@ public class Reimbursement {
 	@JoinColumn(name="reimb_type_id", nullable=false)
 	private ReimbType type;
 	
-	public Reimbursement(int amount, Date submitted, Date resolved, String description, Users author,
+	public Reimbursement(int amount, ZonedDateTime submitted, ZonedDateTime resolved, String description, Users author,
 			Users resolver, ReimbStatus status, ReimbType type) {
 		super();
 		this.amount = amount;

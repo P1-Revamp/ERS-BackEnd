@@ -23,11 +23,6 @@ public class LoginService {
 
 	@Transactional
 	public Users getUserByUsernameAndPassword(String username, String password) {
-		
-		
-		
-		System.out.println("username: " + username);
-		System.out.println("password: " + password);	
 	
 		
 		Optional<Users> userOpt = userRepository.findByUsername(username);
@@ -69,8 +64,8 @@ public class LoginService {
 //			e.printStackTrace();
 //		}
 		
-		System.out.println("password: " + password);
-		System.out.println("hashedPassword: " + hashedPassword);
+//		System.out.println("password: " + password);
+//		System.out.println("hashedPassword: " + hashedPassword);
 		
 
 		
@@ -78,13 +73,15 @@ public class LoginService {
 		return null;
 	}
 
-//	public boolean createUser(Users user) {
-//		
-//		if(userRepository.save(user) != null) {
-//			return true;
-//		}
-//		
-//		return false;
-//	}
+	@Transactional
+	public Users getUserById(Integer id) {
+		
+		Optional<Users> userOpt = userRepository.findById(id);
+		
+		Users user = null;
+		if (userOpt.isPresent()) user = userOpt.get();
+		
+		return user;
+	}
 
 }

@@ -43,7 +43,7 @@ public class Users {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="user_role_id", nullable=false)
-	private Roles userRoleId;
+	private Roles role;
 	
 //	@OneToMany
 //	private Reimbursement myReimbursement;
@@ -52,14 +52,14 @@ public class Users {
 //	private Reimbursement reviewReimbursement;
 	
 
-	public Users(String username, String password, String firstName, String lastName, String email, Roles userRoleId) {
+	public Users(String username, String password, String firstName, String lastName, String email, Roles role) {
 		super();
 		this.username = username;
 		this.password = password;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
-		this.userRoleId = userRoleId;
+		this.role = role;
 	}
 	
 

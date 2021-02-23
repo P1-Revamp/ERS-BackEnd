@@ -1,10 +1,12 @@
 package com.revature.controller;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +20,7 @@ import com.revature.service.TicketService;
 
 @RestController
 @RequestMapping(value="/reimbursement")
+@CrossOrigin
 public class TicketController {
 	
 	TicketService ticketService;
@@ -47,7 +50,7 @@ public class TicketController {
 	@PostMapping
 	public ResponseEntity createTicket(@RequestBody Reimbursement reimbursement) {
 		
-		reimbursement.setSubmitted(new Date());
+		reimbursement.setSubmitted(ZonedDateTime.now());
 		
 		if (ticketService.createTicket(reimbursement)) return ResponseEntity.status(201).build();
 		return ResponseEntity.status(500).build();
