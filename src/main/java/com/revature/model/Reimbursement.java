@@ -1,7 +1,7 @@
 package com.revature.model;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,7 +30,7 @@ public class Reimbursement {
 	private int reimbId;
 	
 	@Column(name="amount", nullable=false)
-	private int amount;
+	private BigDecimal amount;
 	
 	@Column(name="submitted", nullable=false)
 	private ZonedDateTime submitted;
@@ -57,7 +57,7 @@ public class Reimbursement {
 	@JoinColumn(name="reimb_type_id", nullable=false)
 	private ReimbType type;
 	
-	public Reimbursement(int amount, ZonedDateTime submitted, ZonedDateTime resolved, String description, Users author,
+	public Reimbursement(BigDecimal amount, ZonedDateTime submitted, ZonedDateTime resolved, String description, Users author,
 			Users resolver, ReimbStatus status, ReimbType type) {
 		super();
 		this.amount = amount;
@@ -69,5 +69,14 @@ public class Reimbursement {
 		this.status = status;
 		this.type = type;
 	}
+
+	public Reimbursement(int reimbId, ZonedDateTime resolved, ReimbStatus status) {
+		super();
+		this.reimbId = reimbId;
+		this.resolved = resolved;
+		this.status = status;
+	}
+	
+	
 	
 }

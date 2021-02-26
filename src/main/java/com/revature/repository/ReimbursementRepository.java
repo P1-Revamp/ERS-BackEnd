@@ -9,6 +9,6 @@ import com.revature.model.Reimbursement;
 
 public interface ReimbursementRepository extends JpaRepository<Reimbursement, Integer> {
 	
-//	public Optional<List<Reimbursement>> findAllByAuthor_id(int authorId);
+	public Optional<List<Reimbursement>> findByAuthorUserId(int authorId);
 
 }

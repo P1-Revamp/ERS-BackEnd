@@ -45,12 +45,6 @@ public class Users {
 	@JoinColumn(name="user_role_id", nullable=false)
 	private Roles role;
 	
-//	@OneToMany
-//	private Reimbursement myReimbursement;
-//	
-//	@OneToMany
-//	private Reimbursement reviewReimbursement;
-	
 
 	public Users(String username, String password, String firstName, String lastName, String email, Roles role) {
 		super();
@@ -61,6 +55,11 @@ public class Users {
 		this.email = email;
 		this.role = role;
 	}
-	
+
+	public Users(String username, String password) {
+		super();
+		this.username = username;
+		this.password = password;
+	}	
 
 }

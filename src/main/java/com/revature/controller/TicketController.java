@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,31 +38,20 @@ public class TicketController {
 		return ResponseEntity.status(200).body(ticketList);
 	}
 	
-//	@GetMapping("/{userId}")
-//	public ResponseEntity<List<Reimbursement>> getTicketsById(@PathVariable int userId) {
-//		
-//		List<Reimbursement> ticketList = ticketService.getTicketsById(userId);
-//		
-//		if (ticketList != null) return ResponseEntity.status(200).body(ticketList);		
-//		return null;
-//		
-//	}
-	
 	@PostMapping
-	public ResponseEntity createTicket(@RequestBody Reimbursement reimbursement) {
+	public ResponseEntity<Boolean> createTicket(@RequestBody Reimbursement reimbursement) {
 		
 		reimbursement.setSubmitted(ZonedDateTime.now());
 		
-		if (ticketService.createTicket(reimbursement)) return ResponseEntity.status(201).build();
-		return ResponseEntity.status(500).build();
-		
+		if (ticketService.createTicket(reimbursement)) return ResponseEntity.status(HttpStatus.CREATED).body(true);
+		return ResponseEntity.status(500).body(false);
 	}
 
 	@PatchMapping
-	public ResponseEntity updateTicket(@RequestBody int reimbId, Date resolved, int statusId) {
+	public ResponseEntity<Boolean> updateTicket(@RequestBody Reimbursement reimbursementUpdate) {
 		
-		if (ticketService.updateTicket(reimbId, resolved, statusId)) return ResponseEntity.status(200).build();
-		return ResponseEntity.status(500).build();
+		if (ticketService.updateTicket(reimbursementUpdate.getReimbId(), reimbursementUpdate.getResolved(), reimbursementUpdate.getStatus().getStatusId())) return ResponseEntity.status(HttpStatus.OK).body(true);
+		return ResponseEntity.status(500).body(false);
 		
 	}
 	
