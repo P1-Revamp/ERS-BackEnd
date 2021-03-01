@@ -2,6 +2,7 @@ package com.revature.model;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -75,6 +76,26 @@ public class Reimbursement {
 		this.reimbId = reimbId;
 		this.resolved = resolved;
 		this.status = status;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Reimbursement other = (Reimbursement) obj;
+		return reimbId == other.reimbId;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(reimbId);
 	}
 	
 	

@@ -27,12 +27,12 @@ public class UserController {
 	}
 	
 	@PostMapping("/login")
-	public ResponseEntity<Integer> login(@RequestBody Users userCredentials) {
+	public ResponseEntity<Integer[]> login(@RequestBody Users userCredentials) {
 		
 		Users user = loginService.getUserByUsernameAndPassword(userCredentials.getUsername(), userCredentials.getPassword());
 		
 		if (user == null) return ResponseEntity.status(404).build();
-		return ResponseEntity.status(200).body(user.getUserId());
+		return ResponseEntity.status(200).body(new Integer[] {user.getUserId(), user.getRole().getRoleId()});
 		
 	}
 	

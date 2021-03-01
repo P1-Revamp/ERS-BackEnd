@@ -23,26 +23,10 @@ public class TicketService {
 		this.reimbursementRepository = reimbursementRepository;
 	}
 
-//	public List<Reimbursement> getTicketsById(int authorId) {
-//		
-//		Optional<List<Reimbursement>> reimbursementOpt = reimbursementRepository.findAllByAuthor_id(authorId);
-//		List<Reimbursement> reimbursementList = null;
-//		if (reimbursementOpt.isPresent()) reimbursementList = reimbursementOpt.get();
-//		
-//		return reimbursementList;
-//
-//	}
-
 	public List<Reimbursement> getAllTicketsExceptById(int userId) {
 		
 		List<Reimbursement> ticketList = reimbursementRepository.findAll();
 		ticketList = ticketList.stream().filter(ticket -> ticket.getAuthor().getUserId() != userId).collect(Collectors.toList());
-		
-//		for (int i = 0; i < ticketList.size(); i ++) {
-//			if (ticketList.get(i).getAuthor().equals(userId)) {
-//				ticketList.remove(i);
-//			}
-//		}
 		
 		return ticketList;
 	}
@@ -50,6 +34,7 @@ public class TicketService {
 	public boolean createTicket(Reimbursement reimbursement) {
 		
 		try {
+			reimbursement.setSubmitted(ZonedDateTime.now());
 			reimbursementRepository.save(reimbursement);
 			return true;
 		} catch (Exception e) {
@@ -58,22 +43,34 @@ public class TicketService {
 		}
 	}
 
-	public boolean updateTicket(int reimbId, ZonedDateTime resolved, int statusId) {
+	public boolean updateTicket(Reimbursement reimbursementUpdate) {
 		
 		try {
-			Optional<Reimbursement> reimbursementOpt = reimbursementRepository.findById(reimbId);
+			Optional<Reimbursement> reimbursementOpt = reimbursementRepository.findById(reimbursementUpdate.getReimbId());
 			
 			Reimbursement reimbursement = null;
 			if (reimbursementOpt.isPresent()) reimbursement = reimbursementOpt.get();
 			
-			reimbursement.setResolved(resolved);
-			reimbursement.setStatus(new ReimbStatus(statusId, ""));
+			reimbursement.setResolved(ZonedDateTime.now());
+			reimbursement.setStatus(reimbursementUpdate.getStatus());
+			reimbursement.setResolver(reimbursementUpdate.getResolver());
+			
 			reimbursementRepository.save(reimbursement);
 			return true;
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	public List<Reimbursement> getTicketsById(int userId) {
+		
+		List<Reimbursement> ticketList = null;
+		
+		ticketList = reimbursementRepository.findByAuthorUserId(userId);
+		
+		return ticketList;
 	}
 	
 	

@@ -32,26 +32,32 @@ public class TicketController {
 		this.ticketService = ticketService;
 	}
 	
+	@GetMapping("/{userId}")
+	public ResponseEntity<List<Reimbursement>> getTicketsById(@PathVariable int userId) {
+		
+		List<Reimbursement> ticketList = ticketService.getTicketsById(userId);
+		return ResponseEntity.status(HttpStatus.OK).body(ticketList);
+	}
+	
 	@GetMapping("/review/{userId}")
 	public ResponseEntity<List<Reimbursement>> getAllTicketsExceptById(@PathVariable int userId) {
+		
 		List<Reimbursement> ticketList = ticketService.getAllTicketsExceptById(userId);
-		return ResponseEntity.status(200).body(ticketList);
+		return ResponseEntity.status(HttpStatus.OK).body(ticketList);
 	}
 	
 	@PostMapping
 	public ResponseEntity<Boolean> createTicket(@RequestBody Reimbursement reimbursement) {
 		
-		reimbursement.setSubmitted(ZonedDateTime.now());
-		
 		if (ticketService.createTicket(reimbursement)) return ResponseEntity.status(HttpStatus.CREATED).body(true);
-		return ResponseEntity.status(500).body(false);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
 	}
 
 	@PatchMapping
 	public ResponseEntity<Boolean> updateTicket(@RequestBody Reimbursement reimbursementUpdate) {
 		
-		if (ticketService.updateTicket(reimbursementUpdate.getReimbId(), reimbursementUpdate.getResolved(), reimbursementUpdate.getStatus().getStatusId())) return ResponseEntity.status(HttpStatus.OK).body(true);
-		return ResponseEntity.status(500).body(false);
+		if (ticketService.updateTicket(reimbursementUpdate)) return ResponseEntity.status(HttpStatus.OK).body(true);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
 		
 	}
 	
