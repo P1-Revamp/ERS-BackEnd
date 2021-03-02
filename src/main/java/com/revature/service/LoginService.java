@@ -84,4 +84,73 @@ public class LoginService {
 		return user;
 	}
 
+	@Transactional
+	public boolean getUserByUsername(String username) {
+		
+		Optional<Users> userOpt = userRepository.findByUsername(username);
+		
+		if (userOpt.isPresent()) return true;
+		return false;
+	}
+
+	@Transactional
+	public boolean updateUsername(Users userUpdate) {
+		
+		try {
+		Optional<Users> userOpt = userRepository.findById(userUpdate.getUserId());
+		
+		Users user = null;		
+		if (userOpt.isPresent()) user = userOpt.get();
+		else return false;
+		
+		user.setUsername(userUpdate.getUsername());
+		userRepository.save(user);
+		return true;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+	}
+
+	@Transactional
+	public boolean updateEmail(Users userUpdate) {
+		
+		try {
+		Optional<Users> userOpt = userRepository.findById(userUpdate.getUserId());
+		
+		Users user = null;		
+		if (userOpt.isPresent()) user = userOpt.get();
+		else return false;
+		
+		user.setEmail(userUpdate.getEmail());
+		userRepository.save(user);
+		return true;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	@Transactional
+	public boolean updatePassword(Users userUpdate) {
+		try {
+		Optional<Users> userOpt = userRepository.findById(userUpdate.getUserId());
+		
+		Users user = null;		
+		if (userOpt.isPresent()) user = userOpt.get();
+		else return false;
+		
+		user.setPassword(userUpdate.getPassword());
+		userRepository.save(user);
+		return true;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 }
