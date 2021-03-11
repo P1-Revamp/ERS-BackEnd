@@ -11,12 +11,12 @@ import com.revature.model.Users;
 import com.revature.repository.UserRepository;
 
 @Service
-public class LoginService {
+public class UserService {
 	
 	UserRepository userRepository;
 	
 	@Autowired
-	public LoginService(UserRepository userRepository) {
+	public UserService(UserRepository userRepository) {
 		super();
 		this.userRepository = userRepository;
 	}
@@ -136,6 +136,7 @@ public class LoginService {
 
 	@Transactional
 	public boolean updatePassword(Users userUpdate) {
+		
 		try {
 		Optional<Users> userOpt = userRepository.findById(userUpdate.getUserId());
 		

@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.revature.model.ReimbStatus;
 import com.revature.model.Reimbursement;
 import com.revature.repository.ReimbursementRepository;
 
