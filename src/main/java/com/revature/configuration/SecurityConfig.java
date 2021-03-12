@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.session.SessionManagementFilter;
@@ -17,9 +17,9 @@ import org.springframework.security.web.session.SessionManagementFilter;
 import com.revature.security.CorsFilter;
 import com.revature.security.auth.ErsUserDetailsService;
 
-//@EnableGlobalMethodSecurity(prePostEnabled=true)
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled=true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	private final ErsUserDetailsService ersUserDetailsService;
@@ -40,47 +40,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
     protected void configure(HttpSecurity http) throws Exception {
 		
-		(
-                (HttpSecurity)
-                        (
-                                (HttpSecurity)
-                                        (
-                                                (ExpressionUrlAuthorizationConfigurer.AuthorizedUrl)
-                                                        http
-                                                                .headers().addHeaderWriter(
-                                                                new StaticHeadersWriter("Access-Control-Allow-Origin", "*")).and()
-                                                                .addFilterBefore(corsFilter(), SessionManagementFilter.class)
-                                                                .csrf().disable()
-                                                                .authorizeRequests()
-                                                                .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
-                                                                .anyRequest()
-
-                                        ).authenticated().and()
-//                        ).formLogin().and()
-        )).httpBasic();
-		
-		
-//
-//            http
-//                    .headers().addHeaderWriter(
-//                    new StaticHeadersWriter("Access-Control-Allow-Origin", "*")).and()
-//                    .addFilterBefore(corsFilter(), SessionManagementFilter.class)
-//                    .csrf().disable()
-//                    .authorizeRequests()
-//                    .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
-//                    .anyRequest()
-//                	.authenticated().and()
-//					.httpBasic();
-		
-//		http
-//			.addFilterBefore(corsFilter(), SessionManagementFilter.class) //adds your custom CorsFilter
-////			.cors().and()
-////			.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
-//			.csrf().disable()
-//			.authorizeRequests().anyRequest().authenticated().and()
-//			.formLogin().and()
-////			.logout().logout
-//			.logout().logoutRequestMatcher(new AntPathRequestMatcher("/user/logout")).clearAuthentication(true).invalidateHttpSession(true).deleteCookies("JSESSIONID");
+        http
+            .headers().addHeaderWriter(
+            new StaticHeadersWriter("Access-Control-Allow-Origin", "*")).and()
+            .addFilterBefore(corsFilter(), SessionManagementFilter.class)
+            .csrf().disable()
+            .authorizeRequests()
+            .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
+            .anyRequest()
+        	.authenticated().and()
+			.httpBasic();
     }
 	
 	@Override

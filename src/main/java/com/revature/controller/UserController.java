@@ -1,8 +1,12 @@
 package com.revature.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +14,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +31,6 @@ public class UserController {
 	private UserService userService;
 	private ErsUserDetailsService ersUserDetailsService;
 	private final PasswordEncoder passwordEncoder;
-//	private BCryptPasswordEncoder passwordEncoder;
 	
 	@Autowired
 	public UserController(UserService userService, ErsUserDetailsService ersUserDetailsService, PasswordEncoder passwordEncoder) {
@@ -34,88 +38,71 @@ public class UserController {
 		this.userService = userService;
 		this.ersUserDetailsService = ersUserDetailsService;
 		this.passwordEncoder = passwordEncoder;
-//		this.passwordEncoder = passwordEncoder;
 	}
 	
-//	@PostMapping("/login")
-//	public ResponseEntity<Integer[]> login(@RequestBody Users userCredentials) {
-//		
-//		UserPrincipal user = (UserPrincipal) ersUserDetailsService.loadUserByUsername(userCredentials.getUsername());
-//		
-////		if (user.getPassword().equals(userCredentials.getPassword())) 
-//		return ResponseEntity.status(HttpStatus.OK).body(new Integer[] {user.getUserId(), user.getRoleId()});
-//		
-////		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-////		Users user = userService.getUserByUsernameAndPassword(userCredentials.getUsername(), userCredentials.getPassword());
-////		
-////		if (user == null) return ResponseEntity.status(404).build();
-////		return ResponseEntity.status(200).body(new Integer[] {user.getUserId(), user.getRole().getRoleId()});
-////		
-//	}
-	
+	@PreAuthorize("hasAnyRole('EMPLOYEE, FINANCIAL_MANAGER')")
 	@PostMapping("/login")
-	public ResponseEntity<Integer[]> login(@RequestBody Users user) {
+	public ResponseEntity<Integer[]> login(@RequestHeader("Authorization") String userInfo) {
 		
-		ErsUserDetails userDetails = ersUserDetailsService.loadUserByUsername(user.getUsername());
+		String username = userService.getUsernameFromHeader(userInfo);
+		ErsUserDetails userDetails = null;
 		
-//		System.out.println("DB password: " + userDetails.getPassword());
-//		System.out.println("Entered password: " + user.getPassword());
-//		System.out.println("Encoded Entered password: " + passwordEncoder.encode(user.getPassword()));
-//		
-//		ResponseEntity.HeadersBuilder<HeadersBuilder<B>>
+		try {
+			userDetails = ersUserDetailsService.loadUserByUsername(username);
+		} catch (UsernameNotFoundException e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
 		
-		if (passwordEncoder.matches(user.getPassword(), userDetails.getPassword())) return ResponseEntity.status(HttpStatus.OK).body(new Integer[] {userDetails.getUserId(), userDetails.getRoleId()});	
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		
-		
-//		 MultiValueMap<String, String> headers = new HttpHeaders();
-//		 headers.add("Test", "Test");
-//		 if (passwordEncoder.matches(user.getPassword(), userDetails.getPassword())) return new ResponseEntity<Integer[]>(new Integer[] {userDetails.getUserId(), userDetails.getRoleId()}, headers, HttpStatus.OK); 
-//		 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		
+		return ResponseEntity.status(HttpStatus.OK).body(new Integer[] {userDetails.getUserId(), userDetails.getRoleId()});				
 	}
 	
-//	@GetMapping("/logout")
-//	public ResponseEntity<String> logout() {
-//		return ResponseEntity.status(HttpStatus.OK).body("Logged Out");
-//	}
-	
+	@PreAuthorize("hasAnyRole('EMPLOYEE, FINANCIAL_MANAGER')")
 	@PostMapping("/username")
 	public ResponseEntity<Boolean> checkIfUsernameAlreadyExists(@RequestBody Users user) {
 		
-		if (userService.getUserByUsername(user.getUsername())) return ResponseEntity.status(HttpStatus.OK).body(true);
-		return ResponseEntity.status(HttpStatus.OK).body(false);
-		
+		return ResponseEntity.status(HttpStatus.OK).body(userService.getUserByUsername(user.getUsername()).isPresent());
 	}
 	
+	@PreAuthorize("hasAuthority('employee:write')")
 	@PatchMapping("/username")
-	public ResponseEntity<Boolean> UpdateUsername(@RequestBody Users userUpdate) {
+	public ResponseEntity<Boolean> updateUsername(@RequestBody Users userUpdate) {
 		
 		if (userService.updateUsername(userUpdate)) return ResponseEntity.status(HttpStatus.OK).body(true);
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
 	}
 	
+	@PreAuthorize("hasAuthority('employee:write')")
 	@PatchMapping("/email")
-	public ResponseEntity<Boolean> UpdateEmail(@RequestBody Users userUpdate) {
+	public ResponseEntity<Boolean> updateEmail(@RequestBody Users userUpdate) {
 		
 		if (userService.updateEmail(userUpdate)) return ResponseEntity.status(HttpStatus.OK).body(true);
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
 	}
 	
+	@PreAuthorize("hasAuthority('employee:write')")
 	@PatchMapping("/password")
-	public ResponseEntity<Boolean> UpdatePassword(@RequestBody Users userUpdate) {
+	public ResponseEntity<Boolean> updatePassword(@RequestBody Users userUpdate) {
+		
+		userUpdate.setPassword(passwordEncoder.encode(userUpdate.getPassword()));
 		
 		if (userService.updatePassword(userUpdate)) return ResponseEntity.status(HttpStatus.OK).body(true);
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
 	}
 	
+	@PreAuthorize("hasAuthority('employee:read')")
 	@GetMapping("/{id}")
-	public ResponseEntity<Users> getUserById(@PathVariable("id") Integer id) {
+	public ResponseEntity<Users> getUserById(@RequestHeader("Authorization") String userInfo, @PathVariable("id") Integer id) {
 		
-		Users user = userService.getUserById(id);
+		Optional<Users> userOpt = userService.getUserByUsername(userService.getUsernameFromHeader(userInfo));
+		if (!userOpt.isPresent()) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		Users user = userOpt.get();
 		
-		if (user == null) return ResponseEntity.status(404).build();
-		return ResponseEntity.status(200).body(user);
+		System.out.println("id: " + id);
+		System.out.println("getUserId: " + user.getUserId());
+		
+		if (user.getUserId() != id) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		return ResponseEntity.status(HttpStatus.OK).body(user);
 		
 	}
 

@@ -1,12 +1,11 @@
 package com.revature.controller;
 
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -32,6 +31,7 @@ public class TicketController {
 		this.ticketService = ticketService;
 	}
 	
+	@PreAuthorize("hasAuthority('ticket:read')")
 	@GetMapping("/{userId}")
 	public ResponseEntity<List<Reimbursement>> getTicketsById(@PathVariable int userId) {
 		
@@ -39,6 +39,7 @@ public class TicketController {
 		return ResponseEntity.status(HttpStatus.OK).body(ticketList);
 	}
 	
+	@PreAuthorize("hasRole('FINANCIAL_MANAGER')")
 	@GetMapping("/review/{userId}")
 	public ResponseEntity<List<Reimbursement>> getAllTicketsExceptById(@PathVariable int userId) {
 		
@@ -46,6 +47,7 @@ public class TicketController {
 		return ResponseEntity.status(HttpStatus.OK).body(ticketList);
 	}
 	
+	@PreAuthorize("hasAuthority('ticket:write')")
 	@PostMapping
 	public ResponseEntity<Boolean> createTicket(@RequestBody Reimbursement reimbursement) {
 		
@@ -53,6 +55,7 @@ public class TicketController {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
 	}
 
+	@PreAuthorize("hasRole('FINANCIAL_MANAGER')")
 	@PatchMapping
 	public ResponseEntity<Boolean> updateTicket(@RequestBody Reimbursement reimbursementUpdate) {
 		

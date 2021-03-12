@@ -1,6 +1,9 @@
 package com.revature.service;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Optional;
+import java.util.Base64.Decoder;
 
 import javax.transaction.Transactional;
 
@@ -22,58 +25,6 @@ public class UserService {
 	}
 
 	@Transactional
-	public Users getUserByUsernameAndPassword(String username, String password) {
-	
-		
-		Optional<Users> userOpt = userRepository.findByUsername(username);
-//		Optional<Users> userOptt = userRepository.findById(1);
-//		List<Users> userAll = userRepository.findAll();
-//		System.out.println("userAll: " + userAll);
-//		Users usPass = userRepository.findByPassword(password);
-//		System.out.println("usPass: " + usPass);
-		
-		Users user = null;
-//		System.out.println("userOpt.isPresent(): " + userOpt.isPresent());
-//		System.out.println("userOptt.isPresent(): " + userOptt.isPresent());
-		if (userOpt.isPresent()) user = userOpt.get();
-		
-//		System.out.println("user: " + user);
-		
-//		StrongTextEncryptor textEncryptor = new StrongTextEncryptor();
-		
-		String hashedPassword = String.valueOf(password.hashCode());
-		
-//		String hashedPassword = Encrypt.encryptPassword(loginInfo.getPassword());
-		
-//		final EncryptionUtility encryptionUtility = new EncryptionUtility();
-//		String decryptPass = EncryptionUtility.decrypt(loginInfo.getPassword(), encryptionUtility.getKey());
-//		loginInfo.setPassword(decryptPass);
-		
-//		EncryptionUtility eu = null;
-//		try {
-//			eu = new EncryptionUtility();
-//			
-//		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-//			e.printStackTrace();
-//		}
-//		String encryptPass = null;
-//		try {
-//			encryptPass = EncryptionUtility.encrypt(loginInfo.getPassword(), eu.getKey());
-//		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
-//	
-//			e.printStackTrace();
-//		}
-		
-//		System.out.println("password: " + password);
-//		System.out.println("hashedPassword: " + hashedPassword);
-		
-
-		
-		if (user != null && user.getPassword().equals(password)) return user;
-		return null;
-	}
-
-	@Transactional
 	public Users getUserById(Integer id) {
 		
 		Optional<Users> userOpt = userRepository.findById(id);
@@ -85,12 +36,9 @@ public class UserService {
 	}
 
 	@Transactional
-	public boolean getUserByUsername(String username) {
+	public Optional<Users> getUserByUsername(String username) {
 		
-		Optional<Users> userOpt = userRepository.findByUsername(username);
-		
-		if (userOpt.isPresent()) return true;
-		return false;
+		return userRepository.findByUsername(username);
 	}
 
 	@Transactional
@@ -153,5 +101,23 @@ public class UserService {
 			return false;
 		}
 	}
+	
+	public String getUsernameFromHeader(String header) {
+		String usernameAndPassword = header.replace("Basic ", "");
+		Decoder decoder = Base64.getDecoder();
+		String usernameAndPasswordDecoded = new String(decoder.decode(usernameAndPassword), StandardCharsets.UTF_8);
+		
+		String[] usernameAndPasswordArray = usernameAndPasswordDecoded.split(":");
+		return usernameAndPasswordArray[0];
+	}
+	
+//	public String getPasswordFromHeader(String header) {
+//		String usernameAndPassword = header.replace("Basic ", "");
+//		Decoder decoder = Base64.getDecoder();
+//		String usernameAndPasswordDecoded = new String(decoder.decode(usernameAndPassword), StandardCharsets.UTF_8);
+//		
+//		String[] usernameAndPasswordArray = usernameAndPasswordDecoded.split(":");
+//		return usernameAndPasswordArray[1];
+//	}
 
 }

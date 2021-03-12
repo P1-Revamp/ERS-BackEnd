@@ -1,29 +1,24 @@
 package com.revature.security.auth;
 
-import static com.revature.security.ErsUserRoles.*;
+import static com.revature.security.ErsUserRoles.EMPLOYEE;
+import static com.revature.security.ErsUserRoles.FINANCIAL_MANAGER;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
 import com.revature.model.Users;
 import com.revature.repository.UserRepository;
 
-//must be altered to allign with a real DB
-@Repository("fake")
-public class FakeErsUserRepositoryService implements ErsUserRepository {
+@Service
+public class IErsUserSecurityService implements ErsUserSecurityService {
 
-	private final PasswordEncoder passwordEncoder;
 	private UserRepository userRepository;
 	
 	@Autowired
-	public FakeErsUserRepositoryService(PasswordEncoder passwordEncoder, UserRepository userRepository) {
+	public IErsUserSecurityService(UserRepository userRepository) {
 		super();
-		this.passwordEncoder = passwordEncoder;
 		this.userRepository = userRepository;
 	}
 
@@ -61,36 +56,9 @@ public class FakeErsUserRepositoryService implements ErsUserRepository {
 								true, 
 								true));
 			}
-
-			
 		}
 		
 		return Optional.empty();
-		
-		
-//		return getApplicationUsers().stream()
-//					.filter(applicationUser -> username.equals(applicationUser.getUsername()))
-//					.findFirst();
-	}
-	
-	//probably grabs from real repo?
-	private List<ErsUserDetails> getApplicationUsers() {
-		List<ErsUserDetails> applicationUsers = Lists.newArrayList(
-			new ErsUserDetails(
-				EMPLOYEE.getGrantedAuthorities(),
-				passwordEncoder.encode("password"),
-				"annasmith",
-				1,
-				1,
-				true,
-				true,
-				true,
-				true
-			)
-		);
-		
-		return applicationUsers;
-		
 	}
 
 }
